@@ -74551,7 +74551,7 @@ readers do not read off random characters that represent icons */
   content: "\f63f";
 }
 
-.router-link-exact-active {
+nav li .router-link-exact-active {
   background-color: #3f51b1 !important;
   color: white !important;
 }

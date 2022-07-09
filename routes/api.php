@@ -21,4 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('user', UserController::class);
 Route::get('profile', [UserController::class, 'profile']);
+Route::get('findUser', [UserController::class, 'search']);
 Route::put('updateProfile', [UserController::class, 'updateProfile']);

@@ -6,19 +6,39 @@
   .widget-user .card-footer {
     padding-top: 5px;
   }
+
+  .main-btn {
+    background-color: #3f51b1;
+    color: white;
+  }
+  .main-btn:hover {
+    background-color: rgb(50 67 159);
+    color: white;
+  }
+  .widget-user .widget-user-image {
+    left: 50%;
+    margin-left: -60px;
+    position: absolute;
+    top: 120px;
+  }
+  .widget-user .widget-user-image > img {
+    border: 3px solid #fff;
+    height: auto;
+    width: 120px;
+  }
 </style>
 
 <template>
   <div class="container">
     <div class="row mt-3">
       <div class="col-md-4">
-        <div class="card card-widget widget-user">
+        <div class="card card-widget widget-user shadow">
           <div class="widget-user-header text-white" style="background: url('./img/shooting.png') center center;">
-            <h3 class="widget-user-username text-right">Elizabeth Pierce</h3>
-            <h5 class="widget-user-desc text-right">Web Designer</h5>
+            <h3 class="widget-user-username text-right" v-html="pickedName"></h3>
+            <h5 class="widget-user-desc text-right" v-html="pickedUsername"></h5>
           </div>
           <div class="widget-user-image">
-            <img class="img-circle" :src="getProfilePhoto()" alt="User Avatar">
+            <img class="img-circle" :src="'/img/profile/'+form.photo" alt="User Avatar">
           </div>
           <div class="card-footer">
             <div class="row">
@@ -46,7 +66,7 @@
       </div>
 
       <div class="col-md-8">
-        <div class="card card-primary">
+        <div class="card card-primary shadow">
           <div class="card-header" style="background-color: #3f51b1;">
             <h3 class="card-title my-1">Update Account Info</h3>
           </div>
@@ -90,7 +110,7 @@
               </div>
             </div>
             <div class="card-footer">
-              <button type="submit" class="btn btn-success" @click.prevent="updateInfo">Update</button>
+              <button type="submit" class="btn main-btn" @click.prevent="updateInfo">Update</button>
             </div>
           </form>
         </div>
@@ -113,6 +133,9 @@
           password: null,
           photo: null,
         }),
+        pickedPhoto: null,
+        pickedName: null,
+        pickedUsername: null,
       }
     },
 
@@ -123,7 +146,8 @@
         
         if(file['size'] < 2111775){
           reader.onloadend = (file) => {
-            this.form.photo = reader.result;
+            this.pickedPhoto = reader.result;
+            console.log(this.pickedPhoto);
           }
           reader.readAsDataURL(file);
 
@@ -137,12 +161,18 @@
       },
 
       updateInfo() {
+        if(this.pickedPhoto != null){
+          this.form.photo = this.pickedPhoto;
+        }
         this.form.put('api/updateProfile')
         .then(() => {
+          location.reload();
           Swal.fire({
+            position: 'top-end',
             icon: 'success',
-            title: 'Success',
-            text: 'Information updated successfully!',
+            title: 'Updated Account Successfully',
+            showConfirmButton: false,
+            timer: 1500
           })
         })
         .catch(() => {
@@ -153,7 +183,11 @@
 
     created() {
       axios.get('api/profile')
-      .then(({ data }) => (this.form.fill(data)));
+      .then(({ data }) => (
+        this.form.fill(data), 
+        this.pickedName = data.name, 
+        this.pickedUsername = data.username
+      ));
     },
 
     mounted() {

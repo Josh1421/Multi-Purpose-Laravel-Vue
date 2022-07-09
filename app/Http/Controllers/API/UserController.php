@@ -24,7 +24,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::latest()->paginate(10);
+        return User::latest()->paginate(5);
     }
 
     /**
@@ -49,7 +49,7 @@ class UserController extends Controller
             'username' => $request['username'],
             'bio' => $request['bio'],
             'type' => $request['type'],
-            'photo' => $request['photo'],
+            'photo' => "profile.png",
             'password' => Hash::make($request['password']),
         ]);
     }
@@ -86,7 +86,7 @@ class UserController extends Controller
 
             //deleting old photo if change new photo
             $userPhoto = public_path('img/profile/').$currentPhoto;
-            if(file_exists($userPhoto)){
+            if('img/profile/'.$currentPhoto != 'img/profile/profile.png'){
                 unlink($userPhoto);
             }
         }
@@ -100,6 +100,22 @@ class UserController extends Controller
 
         $user->update($request->all());
         return ['message' => 'Success'];
+    }
+
+    public function search(){
+        
+        if($search = \Request::get('q')){
+            $users = User::where(function($query) use ($search){
+                $query->where('name', 'LIKE', "%$search%")
+                        ->orWhere('email', 'LIKE', "%$search%")
+                        ->orWhere('type', 'LIKE', "%$search%");
+            })->paginate(5);
+        }
+        else{
+            $users = User::latest()->paginate(5);
+        }
+
+        return $users;
     }
 
     /**
@@ -139,6 +155,14 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('isAdmin');
+
+        $user = User::where('id', $id)->first();
+        $currentPhoto = $user->photo;
+        $userPhoto = public_path('img/profile/').$currentPhoto;
+        if('img/profile/'.$currentPhoto != 'img/profile/profile.png'){
+            unlink($userPhoto);
+        }
         return $find_post = User::find($id)->delete();
     }
 }

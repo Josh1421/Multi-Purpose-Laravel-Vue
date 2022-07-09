@@ -7,33 +7,13 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   </head>
-  <body class="hold-transition sidebar-mini">
-    
+
+  <body class="hold-transition sidebar-mini">  
     <div class="wrapper" id="app">
-      <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <nav class="main-header navbar navbar-expand navbar-white navbar-light shadow">
         <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-          </li>
-          <li class="nav-item d-none d-sm-inline-block">
-            <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-            <i class="fas fa-search"></i>
-            </a>
-            <div class="navbar-search-block">
-              <form class="form-inline">
-                <div class="input-group input-group-sm">
-                  <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-                  <div class="input-group-append">
-                    <button class="btn btn-navbar" type="submit">
-                    <i class="fas fa-search"></i>
-                    </button>
-                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                    <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
           </li>
           <!-- <li class="nav-item d-none d-sm-inline-block">
             <a href="index3.html" class="nav-link">Home</a>
@@ -151,19 +131,35 @@
             </a>
           </li>
         </ul> -->
+       
+        <!-- <div class="form-inline ms-3">
+          <div class="input-group input-group-sm">
+            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" @keyup="searchIt" v-model="search">
+            <div class="input-group-append">
+              <button class="btn btn-navbar" @click="searchIt">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div> -->
       </nav>
-      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <aside class="main-sidebar sidebar-dark-primary elevation-4 shadow">
         <a href="index3.html" class="brand-link text-decoration-none">
         <img src="./img/my-logo.png" alt="LaraStart Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">Lara Start</span>
         </a>
         <div class="sidebar">
-          <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
             <div class="image">
-              <img src="./img/profile.png" class="img-circle elevation-2" alt="User Image">
+              <img src="./img/profile/{{ Auth::user()->photo }}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-              <a href="#" class="d-block text-decoration-none">{{ Auth::user()->name }}</a>
+              <router-link to="/profile" class="d-block text-decoration-none">
+                {{ Auth::user()->name }}
+                <span class="d-block text-muted text-capitalize">
+                  {{ Auth::user()->type }}
+                </span>
+              </router-link>
             </div>
           </div>
           <div class="form-inline">
@@ -178,6 +174,8 @@
           </div>
           <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+              @can('isAdmin')
               <li class="nav-item">
                  <router-link to="/dashboard" class="nav-link">
                   <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -187,6 +185,8 @@
                   </p>
                 </router-link>
               </li>
+              @endcan
+
               <li class="nav-item">
                 <a href="#" class="nav-link" active-class="active">
                   <i class="nav-icon fas fa-gear"></i>
@@ -204,6 +204,7 @@
                   </li>
                 </ul>
               </li>
+
               <li class="nav-item">
                  <router-link to="/profile" class="nav-link">
                   <i class="nav-icon fas fa-user-alt"></i>
@@ -213,6 +214,7 @@
                   </p>
                 </router-link>
               </li>
+
               <li class="nav-item">
                 <a class="nav-link" href="{{ route('logout') }}"
                   onclick="event.preventDefault();
@@ -227,6 +229,7 @@
                     @csrf
                 </form>
               </li>
+
             </ul>
           </nav>
         </div>
@@ -314,6 +317,13 @@
         <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
       </footer> -->
     </div>
+
+    @auth
+      <script>
+        window.user = @json(auth()->user());
+      </script>
+    @endauth
+
     <script src="{{ asset('js/app.js') }}"></script>
   </body>
 </html>
